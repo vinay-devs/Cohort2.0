@@ -21,21 +21,33 @@ class Calculator {
     this.result = 0;
   }
   add(num) {
-    this.result + num;
+    this.result += num;
   }
-  substract(num) {
-    this.result - num;
+  subtract(num) {
+    this.result -= num;
   }
   multiply(num) {
-    this.result * num;
+    this.result *= num;
   }
   divide(num) {
-    this.result / num;
+    if (num != 0) {
+      this.result /= num;
+    } else {
+      throw new Error("Number Can't be Zero");
+    }
   }
   clear(num) {
     this.result = 0;
   }
-  calculate(str) {}
+  calculate(str) {
+    const resultofOperation = eval(str);
+    if (resultofOperation | (resultofOperation != Infinity))
+      this.result = resultofOperation;
+    else throw new Error("Error in the string");
+  }
+  getResult() {
+    return this.result;
+  }
 }
 
 module.exports = Calculator;
