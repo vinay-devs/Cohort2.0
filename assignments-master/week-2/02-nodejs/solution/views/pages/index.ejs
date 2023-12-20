@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo</title>
+  </head>
+  <body>
+    <input id="addInput" type="text" required />
+    <button onclick="addTodos()">Add</button>
+    <ul>
+      <% todos.forEach((todo,index)=>{ %>
+      <li class="todoList">
+        <span id="<%=todo.id %>"><%= todo.todo %></span>
+        <button
+          id="button-edit-<%=todo.id %>"
+          name="edit"
+          onclick="editOrComplete('<%= todo.id %>','<%=todo.id %>')"
+        >
+          Edit
+        </button>
+        <!-- <button onclick="editComplete('<%= index %>')">Done</button> -->
+        <button onclick="deleteTask('<%= todo.id %>')">Delete</button>
+      </li>
+      <% }) %>
+    </ul>
+  </body>
+  <script>
+    let buttonForEditOrComplete;
+
+    function editTask(id, btnid) {
+      buttonForEditOrComplete = document.getElementById(`button-edit-${btnid}`);
+      buttonForEditOrComplete.textContent = "Ok";
+      const spanText = document.getElementById(id);
+      const todo = spanText.textContent;
+      const inputField = document.createElement("input");
+      inputField.type = "text";
+      inputField.value = todo;
+      inputField.id = id;
+      spanText.parentNode.replaceChild(inputField, spanText);
+    }
+
+    function editOrComplete(id, btnid) {
+      buttonForEditOrComplete = document.getElementById(`button-edit-${btnid}`);
+      console.log(buttonForEditOrComplete.textContent.trim() == "Edit");
+      return buttonForEditOrComplete.textContent.trim() == "Edit"
+        ? editTask(id, btnid)
+        : editComplete(id, btnid);
+    }
+    function editComplete(id) {
+      const inputField = document.getElementById(id);
+      let data = inputField.value;
+      if (data) {
+        editTodoTask(id, data);
+      }
+    }
+
+    async function editTodoTask(id, value) {
+      const response = await fetch(`http://localhost:5500/todos/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          updatedTodo: value,
+        }),
+      });
+      console.log(response.status);
+      if (response.status == "200") {
+        buttonForEditOrComplete.textContent = "Edit";
+        window.location.reload();
+      }
+    }
+
+    const newTaskData = document.getElementById("addInput");
+    async function deleteTask(id) {
+      const res = await fetch(`http://localhost:5500/todos/${id}`, {
+        method: "DELETE",
+      });
+      if (res.status == 200) {
+        window.location.reload();
+      }
+    }
+    async function addTodos() {
+      const data = { todo: newTaskData.value };
+      if (data.todo) {
+        const res = await fetch("http://localhost:5500/todos", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+        if (res.status == 200) {
+          window.location.reload();
+        }
+      } else {
+        throw new Error("Enter something in the task");
+      }
+    }
+  </script>
+</html>
