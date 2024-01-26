@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script>
+    let globalId = 1;
+    let todoState = [];
+    let oldTodoState = [];
+    
+
+    function addTodoToDom(todo) {
+      const todoDivContainer=document.getElementById('todos');
+      console.log(todoDivContainer)
+      const todoDiv=document.createElement('div')
+      todoDiv.setAttribute('id',`todo-${todo.id}`)
+      const todoEl=`<h1>${todo.title}</h1>
+      <h2>${todo.description}</h2>
+      `
+      todoDiv.innerHTML=todoEl;
+      todoDivContainer.append(todoDiv);
+    }
+
+    function removeTodoFromDom(todo) {
+      const removeDiv=document.getElementById(`todo-${todo.id}`)
+      removeDiv.remove();
+    }
+
+    function updateTodoInDom(oldTodo, newTodo) {
+        const getDivToUpdate=document.getElementById(`todo-${oldTodo.id}`)
+        getDivToUpdate.innerHTML=''
+        getDivToUpdate.setAttribute('id',`todo-${newTodo.id}`)
+        const todoEl=`
+        <h1>${newTodo.title}</h1>
+        <h2>${newTodo.description}</h2>
+        `
+        getDivToUpdate.innerHTML=todoEl
+        
+    }
+
+    function updateState(newTodos) {
+      // calculate the diff b/w newTodos and oldTodos.
+      // More specifically, find out what todos are - 
+      // 1. added
+      // 2. deleted
+      // 3. updated
+      let added = [];
+      const deleted = [];
+      const updated = [];
+      console.log(added,deleted,updated)
+  
+
+      added=added.concat(newTodos.filter(
+        (newtodo)=>{
+          return !oldTodoState.some((oldtodo)=>oldtodo.id===newtodo.id)
+        }
+      ))
+      console.log(added,deleted,updated)
+      updated.push(...newTodos.filter((todo)=>{
+        return oldTodoState.some((oldtodo)=>{
+          return (oldtodo.id===todo.id && oldtodo.title!==todo.title && oldtodo.description!==todo.description)
+        })
+      }))
+
+      deleted.push([...oldTodoState.filter((oldtodo)=>{
+        return !newTodos.some((newtodo)=>{
+          return newtodo.id==oldtodo.id
+        })
+      })])
+      // calculate these 3 arrays
+      added.map((todo)=>(addTodoToDom(todo)))
+      updated.map((todo)=>(updateTodoInDom(todo.id,todo)))
+      // call addTodo, removeTodo, updateTodo functions on each of the
+      // elements
+
+
+      oldTodoState = newTodos;
+    }
+
+    function addTodo() {
+      const title = document.getElementById("title").value;
+      console.log(title)
+      const description = document.getElementById("description").value;
+      todoState.push({
+        title: title,
+        description: description,
+        id: globalId++,
+      })
+      updateState(todoState);
+    }
+  </script>
+</head>
+
+<body>
+  <input type="text" id="title" placeholder="Todo title"></input> <br /><br />
+  <input type="text" id="description" placeholder="Todo description"></input> <br /><br />
+  <button onclick="addTodo()">Add todo</button>
+  <br /> <br />
+
+  <div id="todos">
+
+  </div>
+</body>
+
+</html>

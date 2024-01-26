@@ -8,6 +8,7 @@ const passwordSchema = zod.string().min(5);
 const jwt = require("jsonwebtoken");
 const jwtSecret = process.env.JWT_SECRET_KEY;
 
+console.log(jwtSecret);
 // Admin Routes
 router.post("/signup", (req, res) => {
   // Implement admin signup logic
