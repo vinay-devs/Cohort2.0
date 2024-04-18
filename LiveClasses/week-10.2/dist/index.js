@@ -9,27 +9,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const pg_1 = require("pg");
-// Async function to fetch user data from the database given an email
-function getUser() {
+const client_1 = require("@prisma/client");
+const prisma = new client_1.PrismaClient();
+function insertUser(username, password, firstName, lastName) {
     return __awaiter(this, void 0, void 0, function* () {
-        const client = new pg_1.Client({
-            host: "localhost",
-            port: 5432,
-            database: "postgres",
-            user: "postgres",
-            password: "mysecretpassword",
+        const res = yield prisma.user.create({
+            data: {
+                email: username,
+                password,
+                firstName,
+                lastName,
+                age: 10
+            },
         });
-        const conn = yield client.connect();
-        console.log(conn, "CONN");
-        const insertData = yield client.query(`INSERT INTO users (id,username,email,password) VALUES (2,'vinaydevs','vinaydevs@gmail.com','vinaydevs')`);
-        yield client.end();
-        return insertData;
+        console.log(res);
     });
 }
-// Example usage
-getUser()
-    .then((data) => {
-    console.log(data);
-})
-    .catch(console.error);
+insertUser("vinaydevs", "vinaydevs", "vinay", "devs");

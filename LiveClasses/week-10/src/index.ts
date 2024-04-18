@@ -12,7 +12,7 @@ async function getUser() {
   const conn = await client.connect();
   console.log(conn, "CONN");
   const insertData = await client.query(
-    `INSERT INTO users (id,username,email,password) VALUES (1,'vinaydevs','vinaydevs@gmail.com','vinaydevs')`
+    `INSERT INTO users (id,username,email,password) VALUES (2,'vinaydevs','vinaydevs@gmail.com','vinaydevs')`
   );
   await client.end();
   return insertData;
